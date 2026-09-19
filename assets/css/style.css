@@ -1,5 +1,68 @@
 /* =========================================================================
    Happy Birthday — stylesheet
+   -------------------------------------------------------------------------
+   Fonts are self-hosted (assets/fonts) so there are no third-party requests,
+   no layout shift and the page works offline.
+   ========================================================================= */
+
+@font-face {
+  font-family: "Fredoka";
+  src: url("../fonts/fredoka-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Fredoka";
+  src: url("../fonts/fredoka-500.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Fredoka";
+  src: url("../fonts/fredoka-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Fredoka";
+  src: url("../fonts/fredoka-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("../fonts/nunito-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("../fonts/nunito-400-italic.woff2") format("woff2");
+  font-weight: 400; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("../fonts/nunito-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("../fonts/nunito-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("../fonts/nunito-800.woff2") format("woff2");
+  font-weight: 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("../fonts/caveat-500.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Caveat";
+  src: url("../fonts/caveat-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* =========================================================================
+   Happy Birthday — stylesheet
    1.  Tokens
    2.  Reset & base
    3.  Utilities (wrap, buttons, chips, fields)
@@ -46,6 +109,8 @@
 
   --font-display: "Fredoka", "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
   --font-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hand: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+  --scallop-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='18'%3E%3Cpath d='M0,18 A18,18 0 0 0 36,18 Z' fill='%23fff'/%3E%3C/svg%3E");
 
   --wrap: 1120px;
   --topbar-h: 66px;
@@ -67,12 +132,9 @@ body {
   font-size: clamp(1rem, 0.97rem + 0.2vw, 1.075rem);
   line-height: 1.65;
   color: var(--ink);
-  background:
-    radial-gradient(1200px 620px at 12% -8%, rgba(255, 210, 63, 0.30), transparent 62%),
-    radial-gradient(1100px 600px at 92% 4%, rgba(255, 107, 157, 0.24), transparent 60%),
-    radial-gradient(900px 700px at 50% 105%, rgba(63, 201, 184, 0.22), transparent 60%),
-    linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
-  background-attachment: fixed, fixed, fixed, fixed;
+  background: linear-gradient(180deg, var(--cream) 0%, var(--cream-2) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -81,6 +143,11 @@ body {
 body.is-locked { overflow: hidden; }
 
 img { max-width: 100%; display: block; }
+
+/* A class that sets `display` silently beats the UA rule for [hidden] — this
+   keeps `hidden` authoritative (it was leaving the "back to top" button on
+   screen at the top of the page). */
+[hidden] { display: none !important; }
 button { font: inherit; color: inherit; }
 a { color: inherit; }
 
@@ -223,9 +290,9 @@ p:last-child { margin-bottom: 0; }
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  opacity: 0.5;
-  background-image: radial-gradient(rgba(44, 33, 64, 0.055) 1px, transparent 1px);
-  background-size: 20px 20px;
+  opacity: 0.45;
+  background-image: radial-gradient(rgba(44, 33, 64, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
   mask-image: radial-gradient(circle at 50% 40%, #000 30%, transparent 78%);
 }
 
@@ -412,7 +479,7 @@ p:last-child { margin-bottom: 0; }
   gap: 18px;
   padding: 0 clamp(18px, 4vw, 40px);
   background: rgba(255, 250, 244, 0.72);
-  backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(10px) saturate(1.3);
   border-bottom: 1px solid rgba(44, 33, 64, 0.08);
   transform: translateY(-100%);
   transition: transform 0.5s var(--ease-out);
@@ -567,7 +634,7 @@ p:last-child { margin-bottom: 0; }
 
 .hero__cue {
   position: absolute;
-  left: 50%; bottom: 108px;
+  left: 50%; bottom: 44px;
   transform: translateX(-50%);
   display: grid;
   justify-items: center;
@@ -611,13 +678,13 @@ p:last-child { margin-bottom: 0; }
   z-index: 3;
 }
 section[id] { scroll-margin-top: calc(var(--topbar-h) + 12px); }
-.section--letter { background: linear-gradient(180deg, rgba(255, 253, 249, 0.93), rgba(255, 246, 236, 0.93)); }
-.section--day { background: rgba(255, 246, 236, 0.92); }
-.section--gallery { background: linear-gradient(180deg, rgba(255, 246, 236, 0.92), rgba(253, 242, 255, 0.92)); }
-.section--cake { background: linear-gradient(180deg, rgba(253, 242, 255, 0.92), rgba(238, 249, 255, 0.92)); }
-.section--wishes { background: linear-gradient(180deg, rgba(238, 249, 255, 0.92), rgba(240, 253, 248, 0.92)); }
-.section--gifts { background: linear-gradient(180deg, rgba(240, 253, 248, 0.92), rgba(255, 248, 239, 0.92)); }
-.section--outro { background: rgba(255, 248, 239, 0.92); }
+.section--letter { background: linear-gradient(180deg, rgba(255, 253, 249, 0.9), rgba(255, 246, 236, 0.9)); }
+.section--day { background: rgba(255, 246, 236, 0.9); }
+.section--gallery { background: linear-gradient(180deg, rgba(255, 246, 236, 0.9), rgba(253, 242, 255, 0.9)); }
+.section--cake { background: linear-gradient(180deg, rgba(253, 242, 255, 0.9), rgba(238, 249, 255, 0.9)); }
+.section--wishes { background: linear-gradient(180deg, rgba(238, 249, 255, 0.9), rgba(240, 253, 248, 0.9)); }
+.section--gifts { background: linear-gradient(180deg, rgba(240, 253, 248, 0.9), rgba(255, 248, 239, 0.9)); }
+.section--outro { background: rgba(255, 248, 239, 0.9); }
 
 .section__head {
   max-width: 720px;
@@ -938,6 +1005,11 @@ section[id] { scroll-margin-top: calc(var(--topbar-h) + 12px); }
   cursor: pointer;
   transition: transform 0.2s var(--ease-out);
   transform-origin: bottom center;
+}
+.candle::before {
+  content: "";
+  position: absolute;
+  inset: -14px -13px -6px;
 }
 .candle::after {
   content: "";
@@ -1332,12 +1404,30 @@ section[id] { scroll-margin-top: calc(var(--topbar-h) + 12px); }
   .wish-wall { columns: 1; }
   .wish-form__row--end { justify-content: center; }
   .fab__label { display: none; }
-  .fab { padding: 14px; }
-  .topbar__brand span:last-child { display: none; }
+  .fab { padding: 14px; min-height: 48px; min-width: 48px; justify-content: center; }
+
+  /* header: 44px brand target, name kept for screen readers, tighter nav */
+  .topbar { gap: 6px; padding: 0 8px; }
+  .topbar__brand { min-height: 44px; min-width: 44px; padding: 0 6px; }
+  .topbar__dot { width: 18px; height: 18px; }
+  .topbar__brand span:last-child {
+    position: absolute; width: 1px; height: 1px;
+    padding: 0; margin: -1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .topbar__nav { gap: 0; }
+  .topbar__nav a {
+    padding: 10px 7px;
+    font-size: 0.78rem;
+    letter-spacing: -0.01em;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
 }
 @media (max-width: 420px) {
-  .candles { gap: 14px; }
-  .candle { width: 12px; height: 56px; }
+  .candles { gap: 24px; }
+  .candle { width: 16px; height: 60px; }
 }
 
 /* --------------------- 17. Motion & print preferences ------------------ */
@@ -1353,7 +1443,405 @@ section[id] { scroll-margin-top: calc(var(--topbar-h) + 12px); }
 }
 
 @media print {
-  .topbar, .fabs, .intro, .balloon-field, .confetti-canvas, .scroll-progress, .grain { display: none !important; }
+  .topbar, .fabs, .intro, .balloon-field, .confetti-canvas, .scroll-progress, .grain,
+  .aurora, .sparkle-field, .trail-canvas, .cursor-glow, .bunting, .scallop, .hero__cue { display: none !important; }
   body { background: #fff; }
   .section { padding: 18px 0; break-inside: avoid; }
+  /* reveal-on-scroll must not leave the printed page blank */
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .hero__line { -webkit-text-fill-color: var(--pink); color: var(--pink); }
+  .letter, .day-card, .memory, .gift-card, .outro, .wish-note { box-shadow: none !important; border: 1px solid #ddd; }
+}
+
+/* =========================================================================
+   18. Beauty layer — ambient light, garlands, paper edges and micro-motion
+   ========================================================================= */
+
+/* ---- ambient aurora: slow colour drift behind everything ---- */
+.aurora {
+  position: fixed;
+  inset: -14vh -12vw;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  filter: blur(46px);
+  contain: strict;
+}
+.aurora__blob {
+  position: absolute;
+  border-radius: 50%;
+  backface-visibility: hidden;
+}
+.aurora__blob--1 {
+  width: 46vw; height: 46vw; left: 2%; top: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 107, 157, 0.62), transparent 66%);
+  animation: drift1 30s ease-in-out infinite;
+}
+.aurora__blob--2 {
+  width: 40vw; height: 40vw; right: 0; top: 6%;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 210, 63, 0.56), transparent 66%);
+  animation: drift2 36s ease-in-out infinite;
+}
+.aurora__blob--3 {
+  width: 44vw; height: 44vw; left: 12%; bottom: 2%;
+  background: radial-gradient(circle at 50% 50%, rgba(63, 201, 184, 0.5), transparent 66%);
+  animation: drift3 42s ease-in-out infinite;
+}
+.aurora__blob--4 {
+  width: 34vw; height: 34vw; right: 6%; bottom: 8%;
+  background: radial-gradient(circle at 50% 50%, rgba(160, 108, 213, 0.44), transparent 66%);
+  animation: drift1 34s ease-in-out infinite reverse;
+}
+@keyframes drift1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(6vw, 5vh, 0) scale(1.12); }
+}
+@keyframes drift2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50%      { transform: translate3d(-7vw, 7vh, 0) scale(0.92); }
+}
+@keyframes drift3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.95); }
+  50%      { transform: translate3d(5vw, -6vh, 0) scale(1.1); }
+}
+
+/* ---- garlands / bunting ---- */
+.bunting {
+  position: absolute;
+  top: calc(var(--topbar-h) - 12px);
+  left: 0; right: 0;
+  height: 96px;
+  pointer-events: none;
+  z-index: 4;
+}
+.bunting svg { width: 100%; height: 100%; overflow: visible; display: block; }
+.bunting__string {
+  fill: none;
+  stroke: rgba(44, 33, 64, 0.28);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.bunting__flag {
+  transform-box: fill-box;
+  transform-origin: 50% 0%;
+  animation: sway 3.6s ease-in-out infinite;
+  filter: drop-shadow(0 3px 4px rgba(44, 33, 64, 0.16));
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-2.6deg); }
+  50%      { transform: rotate(2.6deg); }
+}
+.bunting--footer {
+  position: absolute;
+  top: 0;
+  height: 74px;
+  opacity: 0.92;
+}
+/* the footer garland is a still-life: swaying ~20 more SVG groups down there
+   costs main-thread paint for no visible gain, so it stays put. */
+.bunting--footer .bunting__flag { animation: none; }
+
+/* ---- drifting sparkles ---- */
+.sparkle-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.sparkle {
+  position: absolute;
+  font-size: var(--s, 14px);
+  opacity: 0;
+  animation: twinkle var(--t, 9s) ease-in-out var(--d, 0s) infinite;
+  will-change: transform, opacity;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: translateY(0) scale(0.6) rotate(0deg); }
+  35%      { opacity: 0.85; transform: translateY(-14px) scale(1) rotate(12deg); }
+  70%      { opacity: 0.35; transform: translateY(-26px) scale(0.85) rotate(-8deg); }
+}
+
+/* ---- scalloped paper edges between sections ---- */
+.scallop {
+  position: absolute;
+  left: 0; right: 0;
+  top: -17px;
+  height: 18px;
+  background: var(--scallop, #fffdf9);
+  -webkit-mask-image: var(--scallop-mask);
+  mask-image: var(--scallop-mask);
+  -webkit-mask-size: 36px 18px;
+  mask-size: 36px 18px;
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  pointer-events: none;
+  z-index: 1;
+  filter: drop-shadow(0 -2px 4px rgba(44, 33, 64, 0.045));
+}
+.section--letter  { --scallop: #fffdf9; }
+.section--day     { --scallop: #fff6ec; }
+.section--gallery { --scallop: #fff6ec; }
+.section--cake    { --scallop: #fdf2ff; }
+.section--wishes  { --scallop: #eef9ff; }
+.section--gifts   { --scallop: #f0fdf8; }
+.section--outro   { --scallop: #fff8ef; }
+
+/* ---- hero refinements ---- */
+.hero__inner-parallax { position: relative; z-index: 5; will-change: transform; }
+.hero__line {
+  background-size: 130% 100%;
+  animation: gradientPan 16s ease-in-out infinite, lineIn 0.9s var(--ease-out) both;
+}
+.hero__line--1 {
+  background-image: linear-gradient(100deg, var(--pink) 0%, var(--coral) 45%, var(--tangerine) 75%, var(--yellow) 100%);
+}
+.hero__line--2 {
+  background-image: linear-gradient(100deg, var(--yellow) 0%, var(--mint) 45%, var(--sky) 75%, var(--purple) 100%);
+}
+@supports not ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero__line { -webkit-text-fill-color: currentColor; color: var(--pink); }
+}
+.hero__line--2 { animation-delay: 0s, 0.14s; }
+@keyframes gradientPan {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+@keyframes lineIn {
+  from { opacity: 0; transform: translateY(26px) scale(0.96); filter: blur(6px); }
+}
+.hero__name { animation: lineIn 0.8s var(--ease-out) 0.28s both; }
+.hero__sub  { animation: lineIn 0.8s var(--ease-out) 0.38s both; }
+.hero__cta  { animation: lineIn 0.8s var(--ease-out) 0.46s both; }
+
+/* ---- three-dot flourish under every section heading ---- */
+.section__title::after {
+  content: "";
+  display: block;
+  width: 9px; height: 9px;
+  margin: 20px auto 0;
+  border-radius: 50%;
+  background: var(--pink);
+  box-shadow: -20px 0 0 var(--yellow), 20px 0 0 var(--mint);
+}
+
+/* ---- paper + wax seal on the letter ---- */
+.letter {
+  background-image:
+    repeating-linear-gradient(180deg, transparent 0 30px, rgba(44, 33, 64, 0.045) 30px 31px);
+  background-position: 0 26px;
+}
+.letter__seal {
+  position: absolute;
+  right: clamp(18px, 4vw, 40px);
+  bottom: clamp(18px, 4vw, 36px);
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  color: #fff;
+  background: radial-gradient(circle at 34% 28%, #ff8fb1, var(--pink) 52%, #d63c6c);
+  box-shadow:
+    0 8px 18px -6px rgba(214, 60, 108, 0.65),
+    inset 0 -4px 8px rgba(0, 0, 0, 0.18),
+    inset 0 3px 6px rgba(255, 255, 255, 0.45);
+  transform: rotate(-9deg);
+}
+.letter__seal::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 255, 255, 0.5);
+}
+
+/* ---- push-pin on every wish note ---- */
+.wish-note { position: relative; }
+.wish-note::before {
+  content: "";
+  position: absolute;
+  top: -7px; left: 50%;
+  width: 15px; height: 15px;
+  margin-left: -7.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, #fff, var(--pin, var(--pink)) 60%, rgba(0, 0, 0, 0.35));
+  box-shadow: 0 3px 5px rgba(44, 33, 64, 0.28);
+  z-index: 2;
+}
+
+/* ---- depth on cards, ready for pointer tilt ---- */
+.memory { perspective: 900px; }
+/* will-change is applied only while a card is actually being tilted, so we
+   don't keep a dozen permanent GPU layers around */
+.tilt-active {
+  transition: transform 0.12s linear, box-shadow 0.3s var(--ease-out);
+  will-change: transform;
+}
+
+/* ---- lightbox polish ---- */
+.lightbox__count {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(14px, 3vw, 28px);
+  transform: translateX(-50%);
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+}
+.lightbox__figure img { background: #211734; }
+
+/* ---- buttons: shine sweep + press ripple ---- */
+.btn { position: relative; overflow: hidden; }
+.btn::after {
+  content: "";
+  position: absolute;
+  top: -60%; bottom: -60%;
+  left: -30%;
+  width: 34%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: translateX(-160%) rotate(8deg);
+  pointer-events: none;
+}
+.btn:hover::after { animation: shine 0.85s var(--ease-out); }
+@keyframes shine {
+  from { transform: translateX(-160%) rotate(8deg); }
+  to   { transform: translateX(420%) rotate(8deg); }
+}
+.btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background: rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+  animation: ripple 0.6s var(--ease-out) forwards;
+}
+@keyframes ripple {
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* ---- cake: glow, warm pool of light and richer flames ---- */
+.cake-scene { position: relative; }
+.cake-scene::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 6%;
+  width: min(460px, 78vw);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(255, 196, 92, 0.34), transparent 62%);
+  filter: blur(18px);
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+  animation: glowPulse 5s ease-in-out infinite;
+}
+.cake.is-celebrating ~ * .cake-scene::before { opacity: 0; }
+.candle__flame {
+  box-shadow: 0 0 22px 6px rgba(255, 172, 66, 0.55), 0 0 60px 18px rgba(255, 196, 92, 0.28);
+}
+.candle__flame::after {
+  content: "";
+  position: absolute;
+  left: 50%; top: 22%;
+  width: 5px; height: 9px;
+  border-radius: 50%;
+  background: #fffdf2;
+  transform: translateX(-50%);
+  opacity: 0.85;
+}
+.cake__layer--top { box-shadow: inset -14px -12px 26px rgba(0, 0, 0, 0.12), inset 12px 10px 20px rgba(255, 255, 255, 0.3), 0 -6px 20px rgba(255, 196, 92, 0.28); }
+
+/* ---- footer polish ---- */
+.footer { position: relative; overflow: hidden; }
+.footer__made span { display: inline-block; animation: beat 1.9s ease-in-out infinite; }
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  18%      { transform: scale(1.28); }
+  36%      { transform: scale(1); }
+}
+
+/* ---- cursor companion (desktop, pointer-fine only) ---- */
+.cursor-glow {
+  position: fixed;
+  top: 0; left: 0;
+  width: 340px; height: 340px;
+  margin: -170px 0 0 -170px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  background: radial-gradient(circle, rgba(255, 236, 179, 0.5), transparent 62%);
+  mix-blend-mode: soft-light;
+  transition: opacity 0.5s ease;
+}
+.cursor-glow.is-on { opacity: 1; }
+.trail-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 165;
+}
+
+/* ---- nicer scrollbar ---- */
+@supports selector(::-webkit-scrollbar) {
+  ::-webkit-scrollbar { width: 12px; height: 12px; }
+  ::-webkit-scrollbar-track { background: rgba(255, 248, 239, 0.7); }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    border: 3px solid rgba(255, 248, 239, 0.7);
+    background: linear-gradient(180deg, var(--pink), var(--tangerine));
+  }
+  ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--coral), var(--yellow)); }
+}
+
+/* ---- handwriting accents ---- */
+.letter__sign,
+.outro__sign {
+  font-family: var(--font-hand);
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.3;
+}
+.section__title em { font-family: var(--font-display); }
+
+/* ---- gentle entrances for the intro card ---- */
+.intro__gift { animation: giftIn 1s var(--ease-bounce) both; }
+@keyframes giftIn {
+  from { opacity: 0; transform: scale(0.6) rotate(-12deg); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---- mobile / touch tweaks for the beauty layer ---- */
+@media (max-width: 760px) {
+  .bunting { height: 72px; top: calc(var(--topbar-h) - 6px); }
+  .aurora { opacity: 0.4; }
+  .sparkle-field { display: none; }
+  .letter__seal { position: static; margin: 22px 0 0 auto; }
+  .cursor-glow { display: none; }
+}
+@media (hover: none), (pointer: coarse) {
+  .cursor-glow, .trail-canvas { display: none; }
+}
+
+/* ---- motion preferences for the new layers ---- */
+@media (prefers-reduced-motion: reduce) {
+  .aurora__blob,
+  .sparkle,
+  .hero__line,
+  .hero__name,
+  .hero__sub,
+  .hero__cta,
+  .intro__gift,
+  .footer__made span,
+  .cake-scene::before { animation: none !important; }
+  .aurora { opacity: 0.32; }
+  .sparkle-field, .trail-canvas, .cursor-glow { display: none; }
+  .bunting__flag { animation: none !important; }
 }

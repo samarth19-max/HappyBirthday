@@ -537,13 +537,24 @@
     let index = 0;
     let lastFocus = null;
 
+    function preload(i) {
+      const list = cfg.gallery || [];
+      const item = list[(i + list.length) % list.length];
+      if (item && item.src) { const pre = new Image(); pre.src = item.src; }
+    }
+
     function paint() {
-      const item = (cfg.gallery || [])[index];
+      const list = cfg.gallery || [];
+      const item = list[index];
       if (!item) return;
       img.src = item.src;
       img.alt = item.title || "Birthday memory";
       title.textContent = item.title || "";
       caption.textContent = item.caption || "";
+      const counter = $("#lightboxCount");
+      if (counter) counter.textContent = `${index + 1} / ${list.length}`;
+      preload(index + 1);
+      preload(index - 1);
     }
 
     function open(i) {
@@ -805,6 +816,7 @@
       el.className = "wish-note";
       el.style.setProperty("--note", NOTES[index % NOTES.length]);
       el.style.setProperty("--tilt", rand(-1.6, 1.6).toFixed(2) + "deg");
+      el.style.setProperty("--pin", PALETTE[index % PALETTE.length]);
       el.style.animationDelay = Math.min(index * 0.06, 0.5) + "s";
 
       const when = item.at ? new Date(item.at) : null;
@@ -883,6 +895,278 @@
     });
   }
 
+
+  /* ------------------------------ garlands ----------------------------- */
+  const Bunting = (() => {
+    const SHAPES = {
+      // simple triangle flag
+      triangle: (w, h) => `0,0 ${w},0 ${w / 2},${h}`,
+      // pennant with a notch cut out of the bottom
+      pennant: (w, h) => `0,0 ${w},0 ${w},${h * 0.72} ${w / 2},${h * 0.44} 0,${h * 0.72}`
+    };
+    const KINDS = ["triangle", "pennant", "triangle"];
+
+    function render(el, opts) {
+      if (!el) return;
+      const o = Object.assign({ sag: 30, y0: 6, w: 34, h: 40, gap: 12 }, opts);
+      const width = Math.max(320, el.clientWidth || window.innerWidth);
+      const height = el.clientHeight || 96;
+      const flagW = o.w, flagH = o.h, span = flagW + o.gap;
+      const count = Math.max(6, Math.round((width - 40) / span));
+      const total = count * span;
+      const startX = (width - total) / 2 + o.gap / 2;
+      const midX = width / 2;
+      const ctrlY = o.y0 + o.sag * 2;
+
+      // quadratic bezier: start (0,y0) -> control (mid, ctrlY) -> end (width,y0)
+      const pointAt = (t) => {
+        const mt = 1 - t;
+        return {
+          x: mt * mt * 0 + 2 * mt * t * midX + t * t * width,
+          y: mt * mt * o.y0 + 2 * mt * t * ctrlY + t * t * o.y0
+        };
+      };
+
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.setAttribute("aria-hidden", "true");
+      svg.style.width = "100%";
+      svg.style.height = "100%";
+
+      const string = document.createElementNS(ns, "path");
+      string.setAttribute("class", "bunting__string");
+      string.setAttribute("d", `M0,${o.y0} Q${midX},${ctrlY} ${width},${o.y0}`);
+      svg.appendChild(string);
+
+      for (let i = 0; i < count; i++) {
+        const x = startX + i * span + flagW / 2;
+        const t = Math.max(0, Math.min(1, x / width));
+        const p = pointAt(t);
+        const p2 = pointAt(Math.min(1, t + 0.01));
+        const angle = Math.atan2(p2.y - p.y, p2.x - p.x) * (180 / Math.PI);
+
+        // wrapper carries the placement (attribute), inner group carries the
+        // sway (CSS transform) — the two never fight each other.
+        const wrap = document.createElementNS(ns, "g");
+        wrap.setAttribute("transform", `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${angle.toFixed(1)})`);
+
+        const sway = document.createElementNS(ns, "g");
+        sway.setAttribute("class", "bunting__flag");
+        sway.style.animationDelay = (-rand(0, 3.6)).toFixed(2) + "s";
+        sway.style.animationDuration = rand(3, 4.6).toFixed(2) + "s";
+
+        const poly = document.createElementNS(ns, "polygon");
+        const kind = KINDS[i % KINDS.length];
+        poly.setAttribute("points", SHAPES[kind](flagW, flagH));
+        poly.setAttribute("fill", PALETTE[i % PALETTE.length]);
+        poly.setAttribute("transform", `translate(${(-flagW / 2).toFixed(1)} 0)`);
+
+        sway.appendChild(poly);
+        wrap.appendChild(sway);
+        svg.appendChild(wrap);
+      }
+
+      el.innerHTML = "";
+      el.appendChild(svg);
+    }
+
+    let timer = null;
+    function renderAll() {
+      render($("#bunting"), { sag: 32, y0: 8, w: 46, h: 52, gap: 22 });
+      render($("#buntingFooter"), { sag: 16, y0: 8, w: 38, h: 40, gap: 20 });
+    }
+    function wire() {
+      renderAll();
+      window.addEventListener("resize", () => {
+        window.clearTimeout(timer);
+        timer = window.setTimeout(renderAll, 200);
+      });
+    }
+    return { wire, renderAll };
+  })();
+
+  /* ------------------------------ sparkles ----------------------------- */
+  const Sparkles = (() => {
+    const field = $("#sparkleField");
+    const GLYPHS = ["✨", "⭐", "💛", "🎈", "🌸", "💫", "🎀"];
+    function spawn(count) {
+      if (!field || reduceMotion) return;
+      for (let i = 0; i < count; i++) {
+        const s = document.createElement("span");
+        s.className = "sparkle";
+        s.textContent = pick(GLYPHS);
+        s.style.left = rand(2, 96) + "vw";
+        s.style.top = rand(4, 92) + "vh";
+        s.style.setProperty("--s", randInt(11, 20) + "px");
+        s.style.setProperty("--t", rand(7, 15).toFixed(1) + "s");
+        s.style.setProperty("--d", (-rand(0, 12)).toFixed(1) + "s");
+        field.appendChild(s);
+      }
+    }
+    return { spawn };
+  })();
+
+  /* --------------------------- pointer niceties ------------------------ */
+  const Pointer = (() => {
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    /* --- sparkle trail + warm glow that follows the cursor --- */
+    function wireTrail() {
+      const canvas = $("#trail");
+      const glow = $("#cursorGlow");
+      if (!canvas || !fine || reduceMotion) return;
+      const ctx = canvas.getContext && canvas.getContext("2d");
+      if (!ctx) return;
+
+      let dpr = 1, W = 0, H = 0, raf = null, last = 0;
+      const bits = [];
+      let gx = -999, gy = -999, tx = gx, ty = gy;
+
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        W = window.innerWidth; H = window.innerHeight;
+        canvas.width = Math.floor(W * dpr);
+        canvas.height = Math.floor(H * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      resize();
+      window.addEventListener("resize", resize);
+
+      function loop(now) {
+        const dt = Math.min(3, (now - last) / 16.667) || 1;
+        last = now;
+        ctx.clearRect(0, 0, W, H);
+
+        for (let i = bits.length - 1; i >= 0; i--) {
+          const b = bits[i];
+          b.vy += 0.012 * dt;
+          b.x += b.vx * dt;
+          b.y += b.vy * dt;
+          b.rot += b.vrot * dt;
+          b.life += dt;
+          const fade = clamp01(1 - b.life / b.ttl);
+          if (fade <= 0) { bits.splice(i, 1); continue; }
+          ctx.save();
+          ctx.globalAlpha = fade * 0.85;
+          ctx.translate(b.x, b.y);
+          ctx.rotate(b.rot);
+          ctx.fillStyle = b.color;
+          ctx.fillRect(-b.size / 2, -b.size / 6, b.size, b.size / 3);
+          ctx.restore();
+        }
+
+        if (glow) {
+          gx += (tx - gx) * 0.12 * dt;
+          gy += (ty - gy) * 0.12 * dt;
+          glow.style.transform = `translate3d(${gx.toFixed(1)}px, ${gy.toFixed(1)}px, 0)`;
+        }
+
+        if (bits.length) raf = requestAnimationFrame(loop);
+        else {
+          raf = null;
+          ctx.clearRect(0, 0, W, H);
+          if (glow) glow.classList.remove("is-on");
+        }
+      }
+
+      function start() {
+        if (raf) return;
+        last = performance.now();
+        raf = requestAnimationFrame(loop);
+      }
+
+      window.addEventListener("pointermove", (e) => {
+        tx = e.clientX; ty = e.clientY;
+        if (glow && !glow.classList.contains("is-on")) {
+          gx = gx < -100 ? tx : gx;
+          gy = gy < -100 ? ty : gy;
+          glow.classList.add("is-on");
+        }
+        const n = e.movementX + e.movementY > 26 ? 3 : 1;
+        for (let i = 0; i < n; i++) {
+          bits.push({
+            x: e.clientX + rand(-4, 4),
+            y: e.clientY + rand(-4, 4),
+            vx: rand(-0.7, 0.7), vy: rand(-0.5, 0.5),
+            size: rand(4, 9), rot: rand(0, 6.28), vrot: rand(-0.2, 0.2),
+            color: pick(PALETTE), life: 0, ttl: rand(26, 52)
+          });
+        }
+        if (bits.length > 160) bits.splice(0, bits.length - 160);
+        start();
+      }, { passive: true });
+    }
+
+    /* --- pointer tilt on cards --- */
+    function wireTilt() {
+      if (!fine || reduceMotion) return;
+      $$(".memory, .day-card, .gift-card").forEach((el) => {
+        let raf = null, next = null;
+        function apply() {
+          raf = null;
+          el.style.transform = next;
+        }
+        el.addEventListener("pointermove", (e) => {
+          if (e.pointerType === "touch") return;
+          const r = el.getBoundingClientRect();
+          const px = (e.clientX - r.left) / r.width - 0.5;
+          const py = (e.clientY - r.top) / r.height - 0.5;
+          el.classList.add("tilt-active");
+          next = `perspective(900px) rotateY(${(px * 8).toFixed(2)}deg) rotateX(${(-py * 8).toFixed(2)}deg) translateY(-6px) scale(1.015)`;
+          if (!raf) raf = requestAnimationFrame(apply);
+        });
+        el.addEventListener("pointerleave", () => {
+          if (raf) { cancelAnimationFrame(raf); raf = null; }
+          el.style.transform = "";
+          el.classList.remove("tilt-active");
+        });
+      });
+    }
+
+    /* --- ripple on buttons --- */
+    function wireRipple() {
+      document.addEventListener("click", (e) => {
+        const btn = e.target.closest(".btn");
+        if (!btn || reduceMotion) return;
+        const r = btn.getBoundingClientRect();
+        const size = Math.max(r.width, r.height);
+        const span = document.createElement("span");
+        span.className = "ripple";
+        span.style.width = span.style.height = size + "px";
+        span.style.left = (e.clientX - r.left - size / 2) + "px";
+        span.style.top = (e.clientY - r.top - size / 2) + "px";
+        btn.appendChild(span);
+        window.setTimeout(() => span.remove(), 650);
+      });
+    }
+
+    return { wireTrail, wireTilt, wireRipple };
+  })();
+
+  /* ---------------------------- hero parallax -------------------------- */
+  function wireParallax() {
+    if (reduceMotion) return;
+    const layer = $("#heroParallax");
+    const bunting = $("#bunting");
+    const cue = $(".hero__cue");
+    if (!layer) return;
+    let raf = null;
+    function update() {
+      raf = null;
+      const y = window.scrollY;
+      if (y > window.innerHeight * 1.2) return;
+      layer.style.transform = `translate3d(0, ${(y * 0.16).toFixed(1)}px, 0)`;
+      layer.style.opacity = String(clamp01(1 - y / (window.innerHeight * 0.85)));
+      if (bunting) bunting.style.transform = `translate3d(0, ${(y * 0.34).toFixed(1)}px, 0)`;
+      if (cue) cue.style.opacity = String(clamp01(1 - y / 320));
+    }
+    window.addEventListener("scroll", () => { if (!raf) raf = requestAnimationFrame(update); }, { passive: true });
+    update();
+  }
+
   /* ------------------------------- share ------------------------------- */
   function wireShare() {
     const shareBtn = $("#shareBtn");
@@ -953,7 +1237,47 @@
     const links = $$(".topbar__nav a");
     const sections = links.map((a) => $(a.getAttribute("href"))).filter(Boolean);
 
+    // scroll-in reveal — IO for timing, sweep for guarantee
+    const pending = new Set($$(".reveal"));
+    let io = null;
+
+    function reveal(el) {
+      if (!pending.has(el)) return;
+      pending.delete(el);
+      const siblings = $$(".reveal", el.parentElement);
+      const i = Math.min(siblings.indexOf(el), 6);
+      el.style.transitionDelay = (i > 0 ? i * 0.07 : 0) + "s";
+      el.classList.add("is-in");
+      if (io) io.unobserve(el);
+    }
+
+    // Anything whose top has crossed 92% of the viewport height is revealed —
+    // covers elements in view *and* ones already scrolled past.
+    function sweepReveals() {
+      if (!pending.size) return;
+      const limit = window.innerHeight * 0.92;
+      pending.forEach((el) => {
+        const r = el.getBoundingClientRect();
+        if (r.top < limit || r.bottom < 0) reveal(el);
+      });
+    }
+
+    if (typeof window.IntersectionObserver === "function") {
+      io = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => { if (entry.isIntersecting) reveal(entry.target); });
+      }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
+      pending.forEach((el) => io.observe(el));
+    }
+    sweepReveals();
+
+    let ticking = false;
     function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => { ticking = false; paintScroll(); });
+    }
+
+    function paintScroll() {
       const y = window.scrollY;
       const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
       if (bar) bar.style.width = (y / max) * 100 + "%";
@@ -966,37 +1290,26 @@
         if (r.top <= window.innerHeight * 0.4 && r.bottom > window.innerHeight * 0.25) active = s.id;
       });
       links.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + active));
+      sweepReveals();
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", sweepReveals);
     onScroll();
+    paintScroll();
 
     $$("[data-scroll]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const target = $(btn.dataset.scroll);
-        if (target) target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+        if (!target) return;
+        if (typeof target.scrollIntoView === "function") {
+          target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+        } else {
+          window.location.hash = btn.dataset.scroll;
+        }
       });
     });
 
-    // scroll-in reveal (falls back to "show everything" without IntersectionObserver)
-    const reveals = $$(".reveal");
-    if (!("IntersectionObserver" in window)) {
-      reveals.forEach((el) => el.classList.add("is-in"));
-      return;
-    }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        const siblings = $$(".reveal", el.parentElement);
-        const i = Math.min(siblings.indexOf(el), 6);
-        el.style.transitionDelay = (i > 0 ? i * 0.07 : 0) + "s";
-        el.classList.add("is-in");
-        io.unobserve(el);
-      });
-    }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
-
-    reveals.forEach((el) => io.observe(el));
   }
 
   /* --------------------------------- init ------------------------------ */
@@ -1012,6 +1325,12 @@
     wireShare();
     wireScroll();
     Balloons.spawnAll();
+    Bunting.wire();
+    Sparkles.spawn(window.innerWidth < 760 ? 0 : 10);
+    Pointer.wireTrail();
+    Pointer.wireTilt();
+    Pointer.wireRipple();
+    wireParallax();
 
     if (reduceMotion) Confetti.rain(24);
 

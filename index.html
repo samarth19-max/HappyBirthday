@@ -21,10 +21,10 @@
 <meta name="twitter:description" content="Balloons, cake, memories and a note — all for you." />
 <meta name="twitter:image" content="assets/img/og-cover.jpg" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
-
+<!-- Fonts are self-hosted (assets/fonts) — no third-party requests, works offline. -->
+<link rel="preload" href="assets/fonts/fredoka-600.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/nunito-400.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="assets/fonts/caveat-700.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body class="is-locked">
@@ -44,10 +44,19 @@
 </noscript>
 
 <!-- ===== decorative layers ===== -->
+<div class="aurora" aria-hidden="true">
+  <span class="aurora__blob aurora__blob--1"></span>
+  <span class="aurora__blob aurora__blob--2"></span>
+  <span class="aurora__blob aurora__blob--3"></span>
+  <span class="aurora__blob aurora__blob--4"></span>
+</div>
 <div class="balloon-field" id="balloonField" aria-hidden="true"></div>
+<div class="sparkle-field" id="sparkleField" aria-hidden="true"></div>
 <canvas class="confetti-canvas" id="confetti" aria-hidden="true"></canvas>
+<canvas class="trail-canvas" id="trail" aria-hidden="true"></canvas>
 <div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
 <div class="grain" aria-hidden="true"></div>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 
 <!-- ===== intro / opening screen ===== -->
 <div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
@@ -89,6 +98,8 @@
   <!-- ===== hero ===== -->
   <section class="hero" id="top">
     <div class="hero__glow" aria-hidden="true"></div>
+    <div class="bunting" id="bunting" aria-hidden="true"></div>
+    <div class="hero__inner-parallax" id="heroParallax">
     <div class="wrap hero__inner">
       <p class="hero__date" id="heroDate">•</p>
       <h1 class="hero__title">
@@ -107,6 +118,7 @@
       </div>
       <div class="hero__badges" id="heroBadges"></div>
     </div>
+    </div>
     <div class="hero__cue" aria-hidden="true"><span></span>scroll</div>
     <div class="hero__wave-bottom" aria-hidden="true">
       <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,64 C240,110 480,10 720,42 C960,74 1200,110 1440,56 L1440,120 L0,120 Z"></path></svg>
@@ -115,6 +127,7 @@
 
   <!-- ===== letter ===== -->
   <section class="section section--letter" id="letter">
+    <span class="scallop" aria-hidden="true"></span>
     <div class="wrap">
       <div class="section__head reveal">
         <span class="chip">💌 A note for you</span>
@@ -125,6 +138,7 @@
         <div class="letter__tape letter__tape--r" aria-hidden="true"></div>
         <div class="letter__body" id="letterBody"><!-- filled from config --></div>
         <p class="letter__sign" id="letterSign"></p>
+        <div class="letter__seal" aria-hidden="true">💗</div>
       </article>
       <div class="letter__actions reveal">
         <button class="btn btn--soft" type="button" id="applauseBtn"><span>Send a round of applause</span><span class="btn__emoji">👏</span></button>
@@ -134,6 +148,7 @@
 
   <!-- ===== the day ===== -->
   <section class="section section--day" id="day">
+    <span class="scallop" aria-hidden="true"></span>
     <div class="wrap">
       <div class="section__head reveal">
         <span class="chip" id="dayChip">🎈 The big day</span>
@@ -167,6 +182,7 @@
 
   <!-- ===== gallery ===== -->
   <section class="section section--gallery" id="gallery">
+    <span class="scallop" aria-hidden="true"></span>
     <div class="wrap">
       <div class="section__head reveal">
         <span class="chip">📸 Memories</span>
@@ -179,6 +195,7 @@
 
   <!-- ===== cake ===== -->
   <section class="section section--cake" id="cake">
+    <span class="scallop" aria-hidden="true"></span>
     <div class="wrap wrap--narrow">
       <div class="section__head reveal">
         <span class="chip">🕯️ Make a wish</span>
@@ -227,6 +244,7 @@
 
   <!-- ===== wishes ===== -->
   <section class="section section--wishes" id="wishes">
+    <span class="scallop" aria-hidden="true"></span>
     <div class="wrap">
       <div class="section__head reveal">
         <span class="chip">🫶 The wish wall</span>
@@ -258,6 +276,7 @@
 
   <!-- ===== gifts ===== -->
   <section class="section section--gifts" id="gifts">
+    <span class="scallop" aria-hidden="true"></span>
     <div class="wrap">
       <div class="section__head reveal">
         <span class="chip">🎁 Tiny gifts</span>
@@ -278,6 +297,7 @@
   </section>
 
   <section class="section section--outro">
+    <span class="scallop" aria-hidden="true"></span>
     <div class="wrap wrap--narrow">
       <div class="outro reveal">
         <span class="outro__emoji" aria-hidden="true">🥳</span>
@@ -290,6 +310,7 @@
 </main>
 
 <footer class="footer">
+  <div class="bunting bunting--footer" id="buntingFooter" aria-hidden="true"></div>
   <div class="wrap footer__inner">
     <p class="footer__made">Made with <span aria-hidden="true">🎈</span> confetti and a lot of cake.</p>
     <p class="footer__meta" id="footerMeta"></p>
@@ -315,6 +336,7 @@
       <strong id="lightboxTitle"></strong>
       <span id="lightboxCaption"></span>
     </figcaption>
+    <p class="lightbox__count" id="lightboxCount" aria-live="polite"></p>
   </figure>
   <button class="lightbox__nav lightbox__nav--next" type="button" id="lightboxNext" aria-label="Next memory">›</button>
 </div>
