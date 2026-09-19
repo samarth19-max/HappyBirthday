@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Happy Birthday! 🎂</title>
+<meta name="description" content="A little corner of the internet made just to say happy birthday — balloons, cake, memories and a note for you." />
+<meta name="theme-color" content="#fff7ed" />
+<meta name="color-scheme" content="light" />
+
+<link rel="icon" href="assets/img/favicon-64.png" sizes="64x64" type="image/png" />
+<link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+
+<!-- Social preview -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Happy Birthday! 🎂" />
+<meta property="og:description" content="Balloons, cake, memories and a note — all for you." />
+<meta property="og:image" content="assets/img/og-cover.jpg" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Happy Birthday! 🎂" />
+<meta name="twitter:description" content="Balloons, cake, memories and a note — all for you." />
+<meta name="twitter:image" content="assets/img/og-cover.jpg" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+<link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="is-locked">
+
+<a class="skip-link" href="#main">Skip to the party</a>
+
+<noscript>
+  <style>
+    .intro, .balloon-field, .confetti-canvas { display: none !important; }
+    body.is-locked { overflow: auto !important; }
+    .topbar { transform: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+  </style>
+  <p style="text-align:center;padding:14px 20px;background:#ffd23f42;font-weight:700">
+    This page sprinkles on the confetti with a little JavaScript — turn it on for the full party. 🎈
+  </p>
+</noscript>
+
+<!-- ===== decorative layers ===== -->
+<div class="balloon-field" id="balloonField" aria-hidden="true"></div>
+<canvas class="confetti-canvas" id="confetti" aria-hidden="true"></canvas>
+<div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ===== intro / opening screen ===== -->
+<div class="intro" id="intro" role="dialog" aria-modal="true" aria-labelledby="introTitle">
+  <div class="intro__card">
+    <div class="intro__gift" id="introGift" aria-hidden="true">
+      <div class="gift">
+        <div class="gift__lid"><span class="gift__bow"></span></div>
+        <div class="gift__box"><span class="gift__ribbon"></span></div>
+      </div>
+    </div>
+    <p class="intro__eyebrow" id="introEyebrow">A tiny something, wrapped with love</p>
+    <h1 class="intro__title" id="introTitle">Someone made you a&nbsp;whole website</h1>
+    <p class="intro__text">It has balloons. It has a cake. It even has candles you can blow out. Ready?</p>
+    <button class="btn btn--primary btn--big" id="introOpen" type="button">
+      <span>Open your surprise</span><span class="btn__emoji">🎁</span>
+    </button>
+    <p class="intro__hint">Tap anywhere to begin</p>
+  </div>
+</div>
+
+<!-- ===== header / nav ===== -->
+<header class="topbar" id="topbar">
+  <a class="topbar__brand" href="#top">
+    <span class="topbar__dot"></span>
+    <span id="brandName">Happy Birthday</span>
+  </a>
+  <nav class="topbar__nav" aria-label="Sections">
+    <a href="#letter">Note</a>
+    <a href="#day">The day</a>
+    <a href="#gallery">Memories</a>
+    <a href="#cake">Cake</a>
+    <a href="#wishes">Wishes</a>
+    <a href="#gifts">Gifts</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ===== hero ===== -->
+  <section class="hero" id="top">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="wrap hero__inner">
+      <p class="hero__date" id="heroDate">•</p>
+      <h1 class="hero__title">
+        <span class="hero__line hero__line--1">Happy</span>
+        <span class="hero__line hero__line--2">Birthday</span>
+      </h1>
+      <p class="hero__name">
+        <span class="hero__wave" aria-hidden="true">👋</span>
+        <span id="heroName">Bestie</span>
+        <span class="hero__age" id="heroAge" hidden></span>
+      </p>
+      <p class="hero__sub" id="heroSub">Today the internet is wearing a party hat, and it is all because of you.</p>
+      <div class="hero__cta">
+        <button class="btn btn--primary" type="button" data-scroll="#cake"><span>Blow the candles</span><span class="btn__emoji">🕯️</span></button>
+        <button class="btn btn--ghost" type="button" data-scroll="#letter"><span>Read your note</span><span class="btn__emoji">💌</span></button>
+      </div>
+      <div class="hero__badges" id="heroBadges"></div>
+    </div>
+    <div class="hero__cue" aria-hidden="true"><span></span>scroll</div>
+    <div class="hero__wave-bottom" aria-hidden="true">
+      <svg viewBox="0 0 1440 120" preserveAspectRatio="none"><path d="M0,64 C240,110 480,10 720,42 C960,74 1200,110 1440,56 L1440,120 L0,120 Z"></path></svg>
+    </div>
+  </section>
+
+  <!-- ===== letter ===== -->
+  <section class="section section--letter" id="letter">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="chip">💌 A note for you</span>
+        <h2 class="section__title">Read this <em>slowly</em></h2>
+      </div>
+      <article class="letter reveal" id="letterCard">
+        <div class="letter__tape letter__tape--l" aria-hidden="true"></div>
+        <div class="letter__tape letter__tape--r" aria-hidden="true"></div>
+        <div class="letter__body" id="letterBody"><!-- filled from config --></div>
+        <p class="letter__sign" id="letterSign"></p>
+      </article>
+      <div class="letter__actions reveal">
+        <button class="btn btn--soft" type="button" id="applauseBtn"><span>Send a round of applause</span><span class="btn__emoji">👏</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== the day ===== -->
+  <section class="section section--day" id="day">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="chip" id="dayChip">🎈 The big day</span>
+        <h2 class="section__title" id="dayTitle">It's happening <em>today</em></h2>
+      </div>
+
+      <div class="day-grid reveal">
+        <div class="day-card day-card--clock">
+          <p class="day-card__label" id="clockLabel">Celebrating for</p>
+          <p class="day-card__value" id="clockValue">00 : 00 : 00</p>
+          <p class="day-card__note" id="clockNote">Every second counts today.</p>
+        </div>
+        <div class="day-card">
+          <p class="day-card__label">The date</p>
+          <p class="day-card__value day-card__value--sm" id="dateValue">—</p>
+          <p class="day-card__note" id="dateNote">Marked in every calendar that matters.</p>
+        </div>
+        <div class="day-card">
+          <p class="day-card__label" id="candlesLabel">Candles</p>
+          <p class="day-card__value day-card__value--sm" id="candlesValue">—</p>
+          <p class="day-card__note" id="candlesNote">One for every year of you.</p>
+        </div>
+      </div>
+
+      <div class="timeline" id="timeline" hidden>
+        <h3 class="timeline__title">Moments on the clock</h3>
+        <ol class="timeline__list" id="timelineList"></ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== gallery ===== -->
+  <section class="section section--gallery" id="gallery">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="chip">📸 Memories</span>
+        <h2 class="section__title">A few of our <em>favourite</em> moments</h2>
+        <p class="section__lead">Swap these for your own photos — every card opens up big and bright.</p>
+      </div>
+      <div class="gallery" id="galleryGrid"><!-- filled from config --></div>
+    </div>
+  </section>
+
+  <!-- ===== cake ===== -->
+  <section class="section section--cake" id="cake">
+    <div class="wrap wrap--narrow">
+      <div class="section__head reveal">
+        <span class="chip">🕯️ Make a wish</span>
+        <h2 class="section__title">Time to blow out the candles</h2>
+        <p class="section__lead" id="cakeLead">Tap each flame — or turn on your mic and actually blow. Wish first, though. It's the law.</p>
+      </div>
+
+      <div class="cake-scene reveal">
+        <div class="cake" id="cakeCake">
+          <div class="candles" id="candles"></div>
+          <div class="cake__body">
+            <div class="cake__layer cake__layer--top">
+              <span class="cake__icing"></span>
+              <span class="cake__cherry cake__cherry--1"></span>
+              <span class="cake__cherry cake__cherry--2"></span>
+            </div>
+            <div class="cake__layer cake__layer--mid">
+              <span class="cake__icing"></span>
+            </div>
+            <div class="cake__layer cake__layer--base">
+              <span class="cake__icing"></span>
+            </div>
+            <div class="cake__stand"><span class="cake__stand-top"></span><span class="cake__stand-stem"></span><span class="cake__stand-base"></span></div>
+          </div>
+          <p class="cake__smoke" id="cakeSmoke" hidden>poof 💨</p>
+        </div>
+
+        <div class="cake__panel">
+          <p class="cake__status" id="cakeStatus">All 5 candles are lit…</p>
+          <div class="cake__bar" aria-hidden="true"><span id="cakeBar"></span></div>
+          <div class="cake__buttons">
+            <button class="btn btn--soft" type="button" id="micBtn"><span id="micBtnText">Use my breath</span><span class="btn__emoji">🎤</span></button>
+            <button class="btn btn--ghost" type="button" id="relightBtn"><span>Light them again</span><span class="btn__emoji">🔥</span></button>
+          </div>
+          <p class="cake__hint" id="micHint" hidden></p>
+        </div>
+      </div>
+
+      <div class="cake-reward" id="cakeReward" hidden>
+        <h3>Wish granted 🎉</h3>
+        <p id="cakeRewardText">Now make a plate, cut a slice, and remind everyone it's your day.</p>
+        <button class="btn btn--primary" type="button" id="cakeMore"><span>More confetti, please</span><span class="btn__emoji">🎊</span></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== wishes ===== -->
+  <section class="section section--wishes" id="wishes">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="chip">🫶 The wish wall</span>
+        <h2 class="section__title">Leave a wish, take a <em>wish</em></h2>
+        <p class="section__lead">Write something lovely for the birthday person. Your notes stay on this device (and can be shared with one tap).</p>
+      </div>
+
+      <form class="wish-form reveal" id="wishForm" autocomplete="off">
+        <div class="wish-form__row">
+          <label class="field">
+            <span class="field__label">Your name</span>
+            <input class="field__input" id="wishName" name="wishName" type="text" maxlength="28" placeholder="e.g. Sam" required />
+          </label>
+          <label class="field field--grow">
+            <span class="field__label">Your wish</span>
+            <textarea class="field__input" id="wishText" name="wishText" rows="2" maxlength="180" placeholder="Happy birthday! May this year be your best one yet…" required></textarea>
+          </label>
+        </div>
+        <div class="wish-form__row wish-form__row--end">
+          <div class="emoji-picker" id="emojiPicker" role="group" aria-label="Pick a sticker"></div>
+          <button class="btn btn--primary" type="submit"><span>Stick it on the wall</span><span class="btn__emoji">✍️</span></button>
+        </div>
+      </form>
+
+      <div class="wish-wall" id="wishWall" aria-live="polite"></div>
+      <p class="wish-wall__empty" id="wishEmpty" hidden>No wishes yet — you could be the first.</p>
+    </div>
+  </section>
+
+  <!-- ===== gifts ===== -->
+  <section class="section section--gifts" id="gifts">
+    <div class="wrap">
+      <div class="section__head reveal">
+        <span class="chip">🎁 Tiny gifts</span>
+        <h2 class="section__title">Three boxes, <em>zero</em> wrapping paper</h2>
+        <p class="section__lead">Tap them open. They're small, but they're yours.</p>
+      </div>
+      <div class="gifts" id="giftGrid"><!-- filled from config --></div>
+
+      <div class="share reveal">
+        <p class="share__text">Want to share the party?</p>
+        <div class="share__actions">
+          <button class="btn btn--soft" type="button" id="shareBtn"><span>Share this page</span><span class="btn__emoji">🔗</span></button>
+          <button class="btn btn--ghost" type="button" id="confettiBtn"><span>Confetti cannon</span><span class="btn__emoji">🎉</span></button>
+        </div>
+        <p class="share__toast" id="shareToast" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--outro">
+    <div class="wrap wrap--narrow">
+      <div class="outro reveal">
+        <span class="outro__emoji" aria-hidden="true">🥳</span>
+        <h2 class="outro__title">That's the whole party. <br />Now go be celebrated.</h2>
+        <p class="outro__text" id="outroText">Have the best day — you've earned every bit of it.</p>
+        <p class="outro__sign" id="outroSign"></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <p class="footer__made">Made with <span aria-hidden="true">🎈</span> confetti and a lot of cake.</p>
+    <p class="footer__meta" id="footerMeta"></p>
+  </div>
+</footer>
+
+<!-- ===== floating controls ===== -->
+<div class="fabs">
+  <button class="fab fab--music" type="button" id="musicBtn" aria-pressed="false" title="Play the birthday tune">
+    <span class="fab__icon" id="musicIcon">🔈</span>
+    <span class="fab__label" id="musicLabel">Birthday tune</span>
+  </button>
+  <button class="fab fab--top" type="button" id="toTop" title="Back to the top" hidden><span class="fab__icon">⬆️</span></button>
+</div>
+
+<!-- ===== lightbox ===== -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Memory photo" hidden>
+  <button class="lightbox__close" type="button" id="lightboxClose" aria-label="Close">✕</button>
+  <button class="lightbox__nav lightbox__nav--prev" type="button" id="lightboxPrev" aria-label="Previous memory">‹</button>
+  <figure class="lightbox__figure">
+    <img id="lightboxImg" src="" alt="" />
+    <figcaption>
+      <strong id="lightboxTitle"></strong>
+      <span id="lightboxCaption"></span>
+    </figcaption>
+  </figure>
+  <button class="lightbox__nav lightbox__nav--next" type="button" id="lightboxNext" aria-label="Next memory">›</button>
+</div>
+
+<script src="assets/js/config.js"></script>
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
