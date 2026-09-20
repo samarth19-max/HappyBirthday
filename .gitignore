@@ -1,0 +1,10 @@
+# macOS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# local preview leftovers
+*.log
+node_modules/
+__pycache__/
