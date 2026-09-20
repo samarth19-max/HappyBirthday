@@ -1313,7 +1313,12 @@
   }
 
   /* --------------------------------- init ------------------------------ */
+  let booted = false;
+
   function init() {
+    if (booted) return;   // never build the page twice (double script include, re-fired DOMContentLoaded)
+    booted = true;
+
     renderHero();
     renderLetter();
     renderDay();
